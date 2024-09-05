@@ -1,5 +1,11 @@
 # synckit
 
+## 0.9.2
+
+### Patch Changes
+
+- fix: handle outdated messages in channel queue
+
 ## 0.9.1
 
 ### Patch Changes
