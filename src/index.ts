@@ -20,6 +20,7 @@ import type {
   AnyAsyncFn,
   AnyFn,
   GlobalShim,
+  MainToWorkerAbortMessage,
   MainToWorkerMessage,
   Syncify,
   ValueOf,
@@ -533,6 +534,7 @@ function startWorkerThread<R, T extends AnyAsyncFn<R>>(
     Atomics.store(sharedBufferView!, 0, 0)
 
     if (!['ok', 'not-equal'].includes(status)) {
+      port.postMessage({ id: expectedId, abort: true })
       throw new Error('Internal error: Atomics.wait() failed: ' + status)
     }
 
@@ -609,11 +611,22 @@ export function runAsWorker<
     ({ id, args }: MainToWorkerMessage<Parameters<T>>) => {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       ;(async () => {
+        let isAborted = false
+        workerPort.on('message', (msg: MainToWorkerAbortMessage) => {
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+          if (msg.id === id && msg.abort) {
+            isAborted = true
+          }
+        })
         let msg: WorkerToMainMessage<R>
         try {
           msg = { id, result: await fn(...args) }
         } catch (error: unknown) {
           msg = { id, error, properties: extractProperties(error) }
+        }
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        if (isAborted) {
+          return
         }
         workerPort.postMessage(msg)
         Atomics.add(sharedBufferView, 0, 1)

@@ -25,6 +25,11 @@ export interface MainToWorkerMessage<T extends unknown[]> {
   args: T
 }
 
+export interface MainToWorkerAbortMessage {
+  id: number
+  abort: true
+}
+
 export interface WorkerData {
   sharedBuffer: SharedArrayBuffer
   workerPort: MessagePort
