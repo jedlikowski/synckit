@@ -612,18 +612,20 @@ export function runAsWorker<
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       ;(async () => {
         let isAborted = false
-        workerPort.on('message', (msg: MainToWorkerAbortMessage) => {
+        const handleAbortMessage = (msg: MainToWorkerAbortMessage) => {
           // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
           if (msg.id === id && msg.abort) {
             isAborted = true
           }
-        })
+        }
+        workerPort.on('message', handleAbortMessage)
         let msg: WorkerToMainMessage<R>
         try {
           msg = { id, result: await fn(...args) }
         } catch (error: unknown) {
           msg = { id, error, properties: extractProperties(error) }
         }
+        workerPort.off('message', handleAbortMessage)
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (isAborted) {
           return

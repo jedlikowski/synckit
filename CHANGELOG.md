@@ -1,5 +1,11 @@
 # synckit
 
+## 0.9.3
+
+### Patch Changes
+
+- fix: avoid notifying main if worker task was aborted
+
 ## 0.9.2
 
 ### Patch Changes
