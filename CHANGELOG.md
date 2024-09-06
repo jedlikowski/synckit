@@ -1,5 +1,11 @@
 # synckit
 
+## 0.9.4
+
+### Patch Changes
+
+- fix: remove abort message listener
+
 ## 0.9.3
 
 ### Patch Changes
@@ -44,11 +50,11 @@
 
   ````ts
   export interface GlobalShim {
-    moduleName: string;
+    moduleName: string
     /**
      * `undefined` means side effect only
      */
-    globalName?: string;
+    globalName?: string
     /**
      * 1. `undefined` or empty string means `default`, for example:
      * ```js
@@ -61,7 +67,7 @@
      * ```
      *
      */
-    named?: string | null;
+    named?: string | null
     /**
      * If not `false`, the shim will only be applied when the original `globalName` unavailable,
      * for example you may only want polyfill `globalThis.fetch` when it's unavailable natively:
@@ -73,21 +79,21 @@
      * }
      * ```
      */
-    conditional?: boolean;
+    conditional?: boolean
   }
   ````
 
   You can aslo reuse the exported `DEFAULT_GLOBAL_SHIMS_PRESET` for extanding:
 
   ```js
-  import { DEFAULT_GLOBAL_SHIMS_PRESET, createSyncFn } from "synckit";
+  import { DEFAULT_GLOBAL_SHIMS_PRESET, createSyncFn } from 'synckit'
 
-  const syncFn = createSyncFn(require.resolve("./worker"), {
+  const syncFn = createSyncFn(require.resolve('./worker'), {
     globalShims: [
       ...DEFAULT_GLOBAL_SHIMS_PRESET,
       // your own shim here
     ],
-  });
+  })
   ```
 
 ## 0.8.6
